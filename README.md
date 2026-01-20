@@ -4,6 +4,11 @@
 
 Make every message count! SlowChat encourages thoughtful communication by enforcing a 24-hour cooldown between messages. Perfect for meaningful conversations without the noise of instant messaging.
 
+## 📱 Platform Support
+
+- **Web App**: React + Vite + Tailwind CSS
+- **Mobile App**: Flutter with Clean Architecture (see [slowchat_flutter/](slowchat_flutter/))
+
 ## ✨ Features
 
 - 🔐 **Firebase Authentication** - Secure email/password login
@@ -14,6 +19,41 @@ Make every message count! SlowChat encourages thoughtful communication by enforc
 - 📅 **Message Scheduling** - Schedule messages for later if you've already sent one today
 - 📧 **Email Invites** - Start conversations by email
 - 📱 **Responsive Design** - Beautiful UI built with React + Vite + Tailwind CSS
+- 🧪 **Comprehensive Testing** - Unit and integration tests for web and mobile
+
+---
+
+## 🧪 Testing
+
+### Web App Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run with UI
+npm run test:ui
+
+# Run with coverage
+npm run test:coverage
+```
+
+**Test Results:** ✅ 23 tests passing
+- Unit tests for rate limiting logic
+- Unit tests for file upload validation  
+- Component tests for Login page
+- Integration tests for authentication flow
+
+### Flutter App Tests
+
+```bash
+cd slowchat_flutter
+flutter test
+```
+
+See [slowchat_flutter/README.md](slowchat_flutter/README.md) for Flutter-specific documentation.
+
+---
 
 ## 🚀 Quick Start
 
