@@ -28,6 +28,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [rateLimitInfo, setRateLimitInfo] = useState(null);
+  const [error, setError] = useState('');
 
   // Update user presence
   useUserPresence();
@@ -93,6 +94,7 @@ const Chat = () => {
   const handleSendMessage = async (text, files, scheduledFor) => {
     if (!selectedConversation || !currentUser) return;
 
+    setError('');
     try {
       // Upload files if any
       const uploadedFiles = [];
@@ -130,7 +132,7 @@ const Chat = () => {
 
     } catch (error) {
       console.error('Error sending message:', error);
-      alert(error.message);
+      setError(error.message);
     }
   };
 
@@ -172,6 +174,12 @@ const Chat = () => {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
+        {error && (
+          <div className="bg-red-50 border-b border-red-200 p-3">
+            <p className="text-sm text-red-800 text-center">{error}</p>
+          </div>
+        )}
+        
         {selectedConversation ? (
           <>
             <MessageList

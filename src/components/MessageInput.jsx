@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { formatTimeRemaining } from '../utils/rateLimit';
 
 const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
@@ -6,9 +6,19 @@ const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
   const [files, setFiles] = useState([]);
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduledTime, setScheduledTime] = useState('');
+  const [error, setError] = useState('');
   const fileInputRef = useRef(null);
+  const previewUrlsRef = useRef([]);
 
   const canSend = rateLimitInfo?.canSend;
+
+  // Cleanup preview URLs when component unmounts or files change
+  useEffect(() => {
+    return () => {
+      previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+      previewUrlsRef.current = [];
+    };
+  }, [files]);
 
   const handleFileSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -16,19 +26,24 @@ const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
   };
 
   const removeFile = (index) => {
+    if (previewUrlsRef.current[index]) {
+      URL.revokeObjectURL(previewUrlsRef.current[index]);
+      previewUrlsRef.current.splice(index, 1);
+    }
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!text.trim() && files.length === 0) {
-      alert('Please enter a message or attach a file');
+      setError('Please enter a message or attach a file');
       return;
     }
 
     if (!canSend && !showSchedule) {
-      alert('You can only send one message per 24 hours. Try scheduling it instead.');
+      setError('You can only send one message per 24 hours. Try scheduling it instead.');
       return;
     }
 
@@ -43,11 +58,15 @@ const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
     setFiles([]);
     setScheduledTime('');
     setShowSchedule(false);
+    setError('');
   };
 
-  const getFilePreview = (file) => {
+  const getFilePreview = (file, index) => {
     if (file.type.startsWith('image/')) {
-      return URL.createObjectURL(file);
+      if (!previewUrlsRef.current[index]) {
+        previewUrlsRef.current[index] = URL.createObjectURL(file);
+      }
+      return previewUrlsRef.current[index];
     }
     return null;
   };
@@ -67,6 +86,13 @@ const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
           >
             {showSchedule ? 'Cancel schedule' : 'Schedule message for later'}
           </button>
+        </div>
+      )}
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-3 bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="text-sm text-red-800">{error}</p>
         </div>
       )}
 
@@ -93,7 +119,7 @@ const MessageInput = ({ onSendMessage, rateLimitInfo, conversationId }) => {
             <div key={index} className="relative">
               {file.type.startsWith('image/') ? (
                 <img
-                  src={getFilePreview(file)}
+                  src={getFilePreview(file, index)}
                   alt={file.name}
                   className="h-20 w-20 object-cover rounded-lg"
                 />

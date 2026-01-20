@@ -35,7 +35,7 @@ export const validateFile = (file) => {
   }
   
   if (!allowedTypes.includes(file.type)) {
-    throw new Error('File type not supported. Only images (JPEG, PNG, GIF, WebP) and videos (MP4, WebM, MOV) are allowed');
+    throw new Error('File type not supported. Only images (JPEG, PNG, GIF, WebP) and videos (MP4, WebM, QuickTime) are allowed');
   }
   
   return true;
