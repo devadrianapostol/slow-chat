@@ -20,6 +20,7 @@ Make every message count! SlowChat encourages thoughtful communication by enforc
 - 📧 **Email Invites** - Start conversations by email
 - 📱 **Responsive Design** - Beautiful UI built with React + Vite + Tailwind CSS
 - 🧪 **Comprehensive Testing** - Unit and integration tests for web and mobile
+- 📊 **Non-intrusive Analytics** - Optional IP and approximate location tracking (country/region only)
 
 ---
 
@@ -257,3 +258,64 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 ---
 
 **Made with ❤️ for thoughtful communication**
+
+---
+
+## 📊 Analytics API (Optional)
+
+SlowChat includes an optional analytics backend that non-intrusively tracks user IP addresses and approximate locations (country/region only).
+
+### Features
+- Captures IP address on user login
+- Gets approximate country and region (non-intrusive)
+- Stores data in Firestore for each user
+- Privacy-focused: no behavior tracking, no personal data beyond location
+
+### Setup Analytics API
+
+The analytics API is a separate Python FastAPI service located in `/api`.
+
+```bash
+cd api
+pip install -r requirements.txt
+python main.py
+```
+
+The API will run on `http://localhost:8000` by default.
+
+### Configuration
+
+Add the analytics API URL to your `.env`:
+
+```env
+VITE_ANALYTICS_API_URL=http://localhost:8000
+```
+
+For production, deploy the API to:
+- Heroku
+- Google Cloud Run
+- Any platform supporting Python/FastAPI
+
+See [api/README.md](api/README.md) for detailed deployment instructions.
+
+### Data Storage
+
+Analytics data is stored in Firestore under each user document:
+
+```javascript
+users/{userId}/analytics: {
+  lastLoginIp: "123.45.67.89",
+  lastLoginCountry: "United States",
+  lastLoginRegion: "California",
+  lastLoginAt: "2026-01-21T10:00:00"
+}
+```
+
+### Privacy Note
+
+This feature is designed to be non-intrusive:
+- Only captures data on login (not on every action)
+- Only stores approximate location (country/region, not city or precise coordinates)
+- No tracking of user behavior or messages
+- Can be disabled by not setting `VITE_ANALYTICS_API_URL`
+
